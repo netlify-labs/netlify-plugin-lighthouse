@@ -20,6 +20,18 @@ const getServePath = (dir, path) => {
   return { path: resolvedPath };
 };
 
+const maybeParseJSON = ({ value, name }) => {
+  if (typeof value !== 'string') {
+    return value;
+  }
+
+  try {
+    return JSON.parse(value);
+  } catch (e) {
+    throw new Error(`Invalid JSON for '${name}' input: ${e.message}`);
+  }
+};
+
 const getConfiguration = ({ constants, inputs } = {}) => {
   const serveDir =
     (constants && constants.PUBLISH_DIR) || process.env.PUBLISH_DIR;
@@ -36,34 +48,32 @@ const getConfiguration = ({ constants, inputs } = {}) => {
     );
   }
 
-  let thresholds =
-    (inputs && inputs.thresholds) || process.env.THRESHOLDS || {};
+  const thresholds = maybeParseJSON({
+    value: (inputs && inputs.thresholds) || process.env.THRESHOLDS || {},
+    name: 'thresholds',
+  });
 
-  if (typeof thresholds === 'string') {
-    try {
-      thresholds = JSON.parse(thresholds);
-    } catch (e) {
-      throw new Error(`Invalid JSON for 'thresholds' input: ${e.message}`);
-    }
-  }
+  const extra_headers = maybeParseJSON({
+    value: (inputs && inputs.extra_headers) || process.env.EXTRA_HEADERS,
+    name: 'extra_headers',
+  });
 
-  let audits = (inputs && inputs.audits) || process.env.AUDITS;
-  if (typeof audits === 'string') {
-    try {
-      audits = JSON.parse(audits);
-    } catch (e) {
-      throw new Error(`Invalid JSON for 'audits' input: ${e.message}`);
-    }
-  }
+  let audits = maybeParseJSON({
+    value: (inputs && inputs.audits) || process.env.AUDITS,
+    name: 'audits',
+  });
 
   if (!Array.isArray(audits)) {
-    audits = [{ path: serveDir, url: auditUrl, thresholds, output_path }];
+    audits = [
+      { path: serveDir, url: auditUrl, thresholds, output_path, extra_headers },
+    ];
   } else {
     audits = audits.map((a) => {
       return {
         ...a,
         thresholds: a.thresholds || thresholds,
         output_path: a.output_path || output_path,
+        extra_headers: a.extra_headers || extra_headers,
         ...getServePath(serveDir, a.path),
       };
     });

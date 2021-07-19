@@ -31,6 +31,12 @@ Then add the plugin to your `netlify.toml` configuration file:
   # optional, deploy the lighthouse report to a path under your site
   [plugins.inputs]
     output_path = "reports/lighthouse.html"
+
+  # optional, extra headers to pass to Lighthouse. Useful for auditing pages that require authentication
+  [plugins.inputs.extra_headers]
+    # IMPORTANT - Don't put secrets in your git committed `netlify.toml` file
+    # See here https://docs.netlify.com/configure-builds/file-based-configuration/#inject-environment-variable-values on injecting env variables
+    Authorization = "token"
 ```
 
 By default, the plugin will serve and audit the build directory of the site.
@@ -58,6 +64,10 @@ You can customize the behavior via the `audits` input:
     # you can specify thresholds per audit
     [plugins.inputs.audits.thresholds]
       performance = 0.8
+
+    # you can specify extra_headers per audit
+    [plugins.inputs.audits.extra_headers]
+      CUSTOM_HEADER = "custom value"
 ```
 
 ## Running Locally

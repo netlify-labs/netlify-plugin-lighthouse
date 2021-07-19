@@ -11,6 +11,9 @@ package = "./src/index.js"
 [plugins.inputs]
 output_path = "reports/lighthouse.html"
 
+[plugins.inputs.extra_headers]
+Authorization = "token"
+
 [plugins.inputs.thresholds]
 performance = 0.9
 

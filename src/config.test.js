@@ -81,6 +81,7 @@ describe('config', () => {
       audit_url: 'url',
       thresholds: { seo: 1 },
       output_path: 'reports/lighthouse.html',
+      extra_headers: { Authorization: 'test' },
     };
     const config = getConfiguration({ constants, inputs });
 
@@ -91,6 +92,7 @@ describe('config', () => {
           url: 'url',
           thresholds: { seo: 1 },
           output_path: 'reports/lighthouse.html',
+          extra_headers: { Authorization: 'test' },
         },
       ],
     });
@@ -198,6 +200,33 @@ describe('config', () => {
         {
           path: 'PUBLISH_DIR/route2',
           output_path: 'reports/route2.html',
+          thresholds: {},
+        },
+      ],
+    });
+  });
+
+  it('should use specific audit extra_headers when configured', () => {
+    const constants = { PUBLISH_DIR: 'PUBLISH_DIR' };
+    const inputs = {
+      extra_headers: { Authorization: 'authorization' },
+      audits: [
+        { path: 'route1' },
+        { path: 'route2', extra_headers: { Other: 'other' } },
+      ],
+    };
+    const config = getConfiguration({ constants, inputs });
+
+    expect(config).toEqual({
+      audits: [
+        {
+          path: 'PUBLISH_DIR/route1',
+          extra_headers: { Authorization: 'authorization' },
+          thresholds: {},
+        },
+        {
+          path: 'PUBLISH_DIR/route2',
+          extra_headers: { Other: 'other' },
           thresholds: {},
         },
       ],

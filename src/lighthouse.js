@@ -30,7 +30,7 @@ const getBrowserPath = async () => {
   return info.executablePath;
 };
 
-const runLighthouse = async (browserPath, url) => {
+const runLighthouse = async (browserPath, url, options) => {
   let chrome;
   try {
     const logLevel = 'info';
@@ -49,6 +49,7 @@ const runLighthouse = async (browserPath, url) => {
       port: chrome.port,
       output: 'html',
       logLevel,
+      ...options,
     });
     if (results.lhr.runtimeError) {
       throw new Error(results.lhr.runtimeError.message);

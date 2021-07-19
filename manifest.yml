@@ -13,6 +13,10 @@ inputs:
     required: false
     description: Path to save the generated HTML Lighthouse report
 
+  - name: extra_headers
+    required: false
+    description: Extra headers to pass to Lighthouse. Useful for auditing pages that require authentication
+
   - name: audits
     required: false
     description: A list of audits to perform. Each list item is an object with either a url/path to scan and an optional thresholds mapping.
